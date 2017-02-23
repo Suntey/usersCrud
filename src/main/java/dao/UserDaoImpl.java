@@ -2,8 +2,10 @@ package main.java.dao;
 
 
 import main.java.model.User;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -49,6 +51,11 @@ public class UserDaoImpl implements UserDao {
     public List<User> listUsers() {
         Session session = this.sessionFactory.getCurrentSession();
         List<User> userList = session.createQuery("from User").list();
-        return userList;
+        return userList;}
+
+    public List<User> listUsers(String name){
+        Session session = this.sessionFactory.getCurrentSession();
+        Criteria criteria = session.createCriteria(User.class).add(Restrictions.like("userName", name));
+        return criteria.list();
     }
 }

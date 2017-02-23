@@ -43,4 +43,9 @@ public class UserService {
     public List<User> listUsers(){
         return this.userDao.listUsers();
     }
+
+    @Transactional
+    public List<User> listUsers(String name){
+        return this.userDao.listUsers(name);
+    }
 }

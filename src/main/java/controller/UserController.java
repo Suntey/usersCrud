@@ -62,17 +62,8 @@ public class UserController {
 
     @RequestMapping(value = "/searchUser")
     public String searchUser(@RequestParam("j_userName")String name, Model model){
-        System.out.println(name);
-        if (!name.isEmpty()){
-            List<User> userList = new ArrayList<>();
-            for (User user : userService.listUsers()) {
-                if (user.getUserName().equals(name)){
-                    userList.add(user);
-                }
-            }
-            model.addAttribute("listUsers", userList);
-
-        }
+        List<User> resultOfSearch = this.userService.listUsers(name);
+        model.addAttribute("listUsers", resultOfSearch);
         return "hello";
     }
 }
