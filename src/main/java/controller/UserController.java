@@ -31,9 +31,8 @@ public class UserController {
             System.out.println(name);
             List<User> resultOfSearch = this.userService.listUsers(name);
             model.addAttribute("listUsers", resultOfSearch);
-            return "hello";
         }
-         model.addAttribute("listUsers", this.userService.listUsers());
+         else model.addAttribute("listUsers", this.userService.listUsers());
 
         return "hello";
     }
