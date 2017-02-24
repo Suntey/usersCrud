@@ -109,7 +109,7 @@
             </td>
         </tr>
         <tr valign="top">
-            <f:form method="post" action="/searchUser">
+            <f:form method="post" action="/">
                 <table>
                     <tr>
                         <i> Введите имя для поиска</i>

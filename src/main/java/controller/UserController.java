@@ -25,9 +25,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String listUsers(Model model){
-
+    @RequestMapping(value = "/")
+    public String listUsers(@RequestParam(value = "j_userName", required = false)String name,Model model){
+        if (name != null){
+            System.out.println(name);
+            List<User> resultOfSearch = this.userService.listUsers(name);
+            model.addAttribute("listUsers", resultOfSearch);
+            return "hello";
+        }
          model.addAttribute("listUsers", this.userService.listUsers());
 
         return "hello";
@@ -60,10 +65,10 @@ public class UserController {
 
 
 
-    @RequestMapping(value = "/searchUser")
-    public String searchUser(@RequestParam("j_userName")String name, Model model){
-        List<User> resultOfSearch = this.userService.listUsers(name);
-        model.addAttribute("listUsers", resultOfSearch);
-        return "hello";
-    }
+//    @RequestMapping(value = "/searchUser")
+//    public String searchUser(@RequestParam("j_userName")String name, Model model){
+//        List<User> resultOfSearch = this.userService.listUsers(name);
+//        model.addAttribute("listUsers", resultOfSearch);
+//        return "hello";
+//    }
 }
