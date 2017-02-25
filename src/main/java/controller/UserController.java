@@ -4,13 +4,12 @@ package main.java.controller;
 import main.java.model.User;
 import main.java.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,49 +24,79 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/")
-    public String listUsers(@RequestParam(value = "j_userName", required = false)String name,Model model){
-        if (name != null){
-            System.out.println(name);
-            List<User> resultOfSearch = this.userService.listUsers(name);
-            model.addAttribute("listUsers", resultOfSearch);
-        }
-         else model.addAttribute("listUsers", this.userService.listUsers());
+//    @RequestMapping(value = "/")
+//    public String listUsers(@RequestParam(value = "j_userName", required = false)String name,Model model){
+//        if (name != null){
+//            System.out.println(name);
+//            List<User> resultOfSearch = this.userService.listUsers(name);
+//            model.addAttribute("listUsers", resultOfSearch);
+//        }
+//        else model.addAttribute("listUsers", this.userService.listUsers());
+//
+//        return "hello";
+//    }
 
-        return "hello";
+    @RequestMapping(value="/")
+    public ModelAndView listOfUsers(@RequestParam(required = false) Integer page, User user) {
+        ModelAndView modelAndView = new ModelAndView("hello");
+        if (user != null){
+            modelAndView.addObject("user", user);
+        }
+        List<User> users = userService.listUsers();
+        PagedListHolder<User> pagedListHolder = new PagedListHolder<>(users);
+        pagedListHolder.setPageSize(5);
+
+
+        modelAndView.addObject("maxPages", pagedListHolder.getPageCount());
+
+        if(page==null || page < 1 || page > pagedListHolder.getPageCount())page=1;
+
+        modelAndView.addObject("page", page);
+        if(page == null || page < 1 || page > pagedListHolder.getPageCount()){
+            pagedListHolder.setPage(0);
+            modelAndView.addObject("listUsers", pagedListHolder.getPageList());
+        }
+        else if(page <= pagedListHolder.getPageCount()) {
+            pagedListHolder.setPage(page-1);
+            modelAndView.addObject("listUsers", pagedListHolder.getPageList());
+        }
+
+        return modelAndView;
     }
+
     @ModelAttribute("user")
     public User newUser(){
         return new User();
     }
 
-    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
-    public String addUser(@ModelAttribute("user") User user){
+    @RequestMapping(value = "{pageNumber}/addUser", method = RequestMethod.POST)
+    public String addUser(@ModelAttribute("user") User user, @PathVariable("pageNumber")Integer pageNumber){
         if (user.getUserId() == 0){
             this.userService.createUser(user);}
         else {this.userService.updateUser(user);}
-        return "redirect:/";
+        return "redirect:/?page="+pageNumber;
     }
 
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public String deleteUser(@PathVariable("id")int id){
+    @RequestMapping(value = "/{pageNumber}/delete/{id}", method = RequestMethod.GET)
+    public String deleteUser(@PathVariable("id")int id, @PathVariable("pageNumber")Integer pageNumber){
+        System.out.println(pageNumber);
         userService.deleteUser(id);
 
-        return "redirect:/";
+        return "redirect:/?page="+pageNumber;
     }
-    @RequestMapping(value = "/edit/{id}")
-    public String editUser(@PathVariable("id")int id, Model model){
-        model.addAttribute("user", userService.getUserById(id));
-        model.addAttribute("listUsers", this.userService.listUsers());
+    @RequestMapping(value = "/{pageNumber}/edit/{id}")
+    public ModelAndView editUser(@PathVariable("id")int id, @PathVariable("pageNumber")Integer pageNumber, Model model){
+        return listOfUsers(pageNumber,userService.getUserById(id));
+
+    }
+
+
+
+    @RequestMapping(value = "/searchUser")
+    public String searchUser(@RequestParam("j_userName")String name,  Model model){
+        List<User> resultOfSearch = this.userService.listUsers(name);
+        model.addAttribute("listUsers", resultOfSearch);
         return "hello";
     }
-
-
-
-//    @RequestMapping(value = "/searchUser")
-//    public String searchUser(@RequestParam("j_userName")String name, Model model){
-//        List<User> resultOfSearch = this.userService.listUsers(name);
-//        model.addAttribute("listUsers", resultOfSearch);
-//        return "hello";
-//    }
 }
+

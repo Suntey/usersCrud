@@ -4,7 +4,6 @@ package main.java.service;
 import main.java.dao.UserDao;
 import main.java.model.User;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 /**
@@ -48,4 +47,7 @@ public class UserService {
     public List<User> listUsers(String name){
         return this.userDao.listUsers(name);
     }
+
+
+
 }
