@@ -24,18 +24,6 @@ public class UserController {
         this.userService = userService;
     }
 
-//    @RequestMapping(value = "/")
-//    public String listUsers(@RequestParam(value = "j_userName", required = false)String name,Model model){
-//        if (name != null){
-//            System.out.println(name);
-//            List<User> resultOfSearch = this.userService.listUsers(name);
-//            model.addAttribute("listUsers", resultOfSearch);
-//        }
-//        else model.addAttribute("listUsers", this.userService.listUsers());
-//
-//        return "hello";
-//    }
-
     @RequestMapping(value="/")
     public ModelAndView listOfUsers(@RequestParam(required = false) Integer page, User user) {
         ModelAndView modelAndView = new ModelAndView("hello");
@@ -45,22 +33,13 @@ public class UserController {
         List<User> users = userService.listUsers();
         PagedListHolder<User> pagedListHolder = new PagedListHolder<>(users);
         pagedListHolder.setPageSize(5);
-
-
         modelAndView.addObject("maxPages", pagedListHolder.getPageCount());
 
-        if(page==null || page < 1 || page > pagedListHolder.getPageCount())page=1;
+        if(page==null || page < 1 || page > pagedListHolder.getPageCount()){page=1;}
 
+        pagedListHolder.setPage(page-1);
+        modelAndView.addObject("listUsers", pagedListHolder.getPageList());
         modelAndView.addObject("page", page);
-        if(page == null || page < 1 || page > pagedListHolder.getPageCount()){
-            pagedListHolder.setPage(0);
-            modelAndView.addObject("listUsers", pagedListHolder.getPageList());
-        }
-        else if(page <= pagedListHolder.getPageCount()) {
-            pagedListHolder.setPage(page-1);
-            modelAndView.addObject("listUsers", pagedListHolder.getPageList());
-        }
-
         return modelAndView;
     }
 
@@ -90,12 +69,12 @@ public class UserController {
 
     }
 
-
-
-    @RequestMapping(value = "/searchUser")
-    public String searchUser(@RequestParam("j_userName")String name,  Model model){
+    @RequestMapping(value = "{pageNumber}/searchUser")
+    public String searchUser(@RequestParam("j_userName")String name,  Model model, @PathVariable("pageNumber")Integer pageNumber){
         List<User> resultOfSearch = this.userService.listUsers(name);
         model.addAttribute("listUsers", resultOfSearch);
+        model.addAttribute("indication", new Boolean(true));
+        model.addAttribute("backPage", pageNumber);
         return "hello";
     }
 }

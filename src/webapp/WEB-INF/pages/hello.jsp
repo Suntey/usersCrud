@@ -30,6 +30,14 @@
             <td>
                 <c:if test = "${!empty listUsers}">
 
+                    <c:if test = "${indication == true}">
+                        <c:url value="/" var="back">
+                            <c:param name="page" value="${backPage}"/>
+                        </c:url>
+
+                        <a href="<c:out value="${back}" />">Back</a>
+                    </c:if>
+
                     <table border="5" width="900" cellspacing = "0">
                         <tr  height="30" bgcolor="gray">
                             <th>ID</th>
@@ -52,11 +60,12 @@
                         </c:forEach>
                     </table>
                 </c:if>
-                <div id="pagination">
+                <div id="pagination" >
 
                     <c:url value="/" var="prev">
                         <c:param name="page" value="${page-1}"/>
                     </c:url>
+
                     <c:if test="${page > 1}">
                         <a href="<c:out value="${prev}" />" class="pn prev">Prev</a>
                     </c:if>
@@ -64,7 +73,9 @@
                     <c:forEach begin="1" end="${maxPages}" step="1" varStatus="i">
                         <c:choose>
                             <c:when test="${page == i.index}">
-                                <span>${i.index}</span>
+                                <c:if test="${!empty listUsers}">
+                                    <span>${i.index}</span>
+                                </c:if>
                             </c:when>
                             <c:otherwise>
                                 <c:url value="/" var="url">
@@ -123,12 +134,12 @@
                     </tr>
                     <c:if test="${empty user.userName}">
                         <tr>
-                            <td><input type="submit" value="и ты создал User(a)"></td>
+                            <td><input type="submit" value="and you created a user"></td>
                         </tr>
                     </c:if>
                     <c:if test="${!empty user.userName}">
                         <tr>
-                            <td><input type="submit" value="и ты отредактировал User(a)"></td>
+                            <td><input type="submit" value="and you edited a user"></td>
                         </tr>
                     </c:if>
 
@@ -138,10 +149,10 @@
             </td>
         </tr>
         <tr valign="top">
-            <f:form method="post" action="/searchUser">
+            <f:form method="post" action="${page}/searchUser">
                 <table>
                     <tr>
-                        <i> Введите имя для поиска</i>
+                        <i> Insert a search name</i>
                         <td>
                             <input type="text" name="j_userName" />
 
